@@ -1,0 +1,355 @@
+
+
+* {
+  box-sizing: border-box;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+body{
+  background-color: #100f28;
+  color: white;
+}
+
+
+
+h1, h2, p{
+  margin: auto;
+  text-align: center;
+}
+
+h2{
+  margin-bottom: 10px;
+}
+
+.backgroundimg{
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  z-index: -10;
+  object-fit: cover;
+  margin: 0;
+  padding: 0;
+  left: 0;
+  top: 0
+}
+
+.left-block {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  width: 180px;
+  height: 710px;
+  margin-right: 10px;
+  background-color:rgba(255, 255, 255, 0.437);
+  border-radius: 10px;
+  border: 1px solid white;
+  padding: 20px;
+}
+
+.colors {
+  background-color: hsl(0, 0%, 100%);
+  text-align: left;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  justify-content: center;
+  padding-bottom: 5px;
+  padding-top: 10px;
+  border-radius: 10px;
+  padding: 10px;
+  box-shadow: 0px 4px 5px 0px rgba(0,0,0,0.44);
+  -webkit-box-shadow: 0px 4px 5px 0px rgba(0,0,0,0.44);
+  -moz-box-shadow: 0px 4px 5px 0px rgba(0,0,0,0.44);
+  
+}
+
+.canvas{
+  border: 0px solid #e0e0e0;
+  margin: 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  flex-grow: 1;
+  justify-content: center;
+  max-width: 100vw;
+}
+main{
+    border: 0px solid #e0e0e0;
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    max-width: 100vw;
+  }
+.colors button {
+  display: inline-block;
+  border: 1px solid #00000026;
+  border-radius: 0;
+  outline: none;
+  cursor: pointer;
+  width: 20px;
+  height: 20px;
+  margin-bottom: 5px
+}
+.colors button:nth-child(2n)
+{
+  margin-right: 10px;
+}
+.colors button:nth-child(4n)
+{
+  margin-right: 0px;
+}
+.colors button:nth-of-type(1) {
+  background-color: #ea3030;
+}
+
+.colors button:nth-of-type(2) {
+  background-color: #9b2020;
+}
+
+.colors button:nth-of-type(3) {
+  background-color: #dc732e;
+}
+
+.colors button:nth-of-type(5) {
+  background-color: #e3d253;
+}
+
+.colors button:nth-of-type(6) {
+  background-color: #857a30;
+}
+
+.colors button:nth-of-type(7) {
+  background-color: #43c347;
+}
+
+.colors button:nth-of-type(8) {
+  background-color: #226223;
+}
+
+.colors button:nth-of-type(9) {
+  background-color: #4c86d6;
+}
+
+.colors button:nth-of-type(10) {
+  background-color: #26446c;
+}
+
+.colors button:nth-of-type(11) {
+  background-color: #42cdc1;
+}
+
+.colors button:nth-of-type(12) {
+  background-color: #20625b;
+}
+
+.colors button:nth-of-type(13) {
+  background-color: #ef61d0;
+}
+
+.colors button:nth-of-type(14) {
+  background-color: #843573;
+}
+
+.colors button:nth-of-type(15) {
+  background-color: #7a3cc0;
+}
+
+.colors button:nth-of-type(16) {
+  background-color: #3e1e62;
+}
+
+.colors button:nth-of-type(17) {
+  background-color: #cfcfcf;
+}
+
+.colors button:nth-of-type(18) {
+  background-color: #6e6e6e;
+}
+
+.colors button:nth-of-type(18) {
+  background-color: #1a1a1a;
+}
+
+.colors button:nth-of-type(4) {
+  background-color: #8c471d;
+}
+
+
+.brushes {
+  background-color: hsl(0, 0%, 100%);
+  text-align: left;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  border-radius: 10px;
+  padding: 10px;
+  box-shadow: 0px 4px 5px 0px rgba(0,0,0,0.44);
+-webkit-box-shadow: 0px 4px 5px 0px rgba(0,0,0,0.44);
+-moz-box-shadow: 0px 4px 5px 0px rgba(0,0,0,0.44);
+}
+
+.brushes button {
+  display: inline;
+  width: 40px;
+  border: 0;
+  border-radius: 0;
+  background-color: #ece8e8;
+  padding: 5px;
+  height: auto;
+  outline: none;
+  position: relative;
+  cursor: pointer;
+}
+
+.brushes button:after {
+  height: 1px;
+  display: block;
+  background: #808080;
+  content: '';
+}
+
+.brushes button:nth-of-type(1):after {
+  height: 1px;
+}
+
+.brushes button:nth-of-type(2):after {
+  height: 2px;
+}
+
+.brushes button:nth-of-type(3):after {
+  height: 3px;
+}
+
+.brushes button:nth-of-type(4):after {
+  height: 4px;
+}
+
+.brushes button:nth-of-type(5):after {
+  height: 5px;
+}
+
+.brushes button:nth-of-type(6):after {
+  height: 6px;
+}
+
+.brushes button:nth-of-type(7):after {
+  height: 7px;
+}
+
+.brushes button:nth-of-type(8):after {
+  height: 8px;
+}
+
+.tools button, .actions button {
+  display: block;
+  width: 100%;
+  border: 0;
+  border-radius: 0;
+  background-color: #ece8e8;
+  margin-bottom: 5px;
+  padding: 5px;
+  height: 30px;
+  outline: none;
+  position: relative;
+  cursor: pointer;
+  font-size: 16px;
+}
+.tools button:hover, .actions button:hover{
+  background-color: rgb(198, 227, 237);
+}
+.actions, .tools{
+  background-color: #ffffff;
+  box-shadow: 0px 4px 5px 0px rgba(0,0,0,0.44);
+  -webkit-box-shadow: 0px 4px 5px 0px rgba(0,0,0,0.44);
+  -moz-box-shadow: 0px 4px 5px 0px rgba(0,0,0,0.44);
+  border-radius: 10px;
+  padding: 6.5px; 
+  margin: 0; 
+}
+.actions button:nth-child(1), .tools button:nth-child(1)
+{
+  margin-top: 10px;
+}
+.right-block {
+  width: auto;
+  height: 600px;
+}
+
+#paint-canvas {
+  cursor: crosshair;
+  background-color: white;
+  padding: 5px;
+  border-radius: 10px;
+}
+
+  #svg-frame {
+    border: 1px solid #ccc;
+    width: 1000px !important;
+    height: 100px;
+    margin-top: 10px;
+    overflow-x: auto;
+    background-color: white;
+    border-radius: 10px 0px 0px 10px;
+  }
+
+
+.svg-item {
+  width: 100px;
+  height: 100px;
+  padding: 5px;
+  cursor: pointer;
+}
+
+.svg-item:hover {
+  background-color: #f0f0f0;
+}
+
+.colors button:hover {
+  border: 2px solid rgb(198, 227, 237);
+
+}
+
+.brushes button:hover {
+  border: 2px solid lightblue;
+  background-color: rgb(198, 227, 237);
+}
+
+.buttons button:hover {
+  border: 2px solid lightblue;
+}
+
+.info{
+  display: none;
+}
+@media (max-width: 1030px)
+{
+  h1{
+    font-size: 70px !important;
+    margin-top: 150px;
+    padding: 10px;
+  }
+  h2{
+    font-size: 60px !important;
+    font-weight: 100;
+    padding: 10px;
+  }
+  .info{
+    padding: 10px;
+    display: block;
+    font-size: 40px;}
+  .canvas{
+    display: none;
+  }
+  #svg-frame{
+    display: none;
+  }
+}
+
+.active {
+  background-color: lightblue !important; /* Blue color, change as needed */
+  border: 1px solid blue !important; 
+  color: black;
+}

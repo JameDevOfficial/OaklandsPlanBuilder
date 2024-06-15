@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canvas Drawing App</title>
+    <link href="style.css" rel="stylesheet">
+    <script src="script.js"></script>
+</head>
+<body>
+    <image class="backgroundimg" src="layered-peaks-haikei.svg" alt="backgroundimage">
+	<header>
+		<h1>Oaklands Logic Plan Creator</h1>
+		<h2>By JameDev</h2>
+	</header>
+    <div>
+        <p class="info">Info: Mobile devices and small windows are not supported yet</p>
+    </div>
+    <main>
+        <div class="canvas">
+        <div class="left-block">
+            <div class="colors">
+                <button class="active" type="button" value="#ea3030"></button>
+                <button type="button" value="#9b2020"></button>
+                <button type="button" value="#dc732e"></button>
+                <button type="button" value="#8c471d"></button>
+                <button type="button" value="#e3d253"></button>
+                <button type="button" value="#857a30"></button>
+                <button type="button" value="#43c347"></button>
+                <button type="button" value="#226223"></button>
+                <button type="button" value="#4c86d6"></button>
+                <button type="button" value="#26446c"></button>
+                <button type="button" value="#42cdc1"></button>
+                <button type="button" value="#20625b"></button>
+                <button type="button" value="#ef61d0"></button>
+                <button type="button" value="#843573"></button>
+                <button type="button" value="#7a3cc0"></button>
+                <button type="button" value="#3e1e62"></button>
+                <button type="button" value="#cfcfcf"></button>
+                <button type="button" value="#6e6e6e"></button>
+                <button type="button" value="#1a1a1a"></button>
+            </div>
+            <div class="brushes">
+                <button type="button" value="1">1</button>
+                <button type="button" value="3">3</button>
+                <button class="active" type="button" value="5">5</button>
+                <button type="button" value="7">7</button>
+                <button type="button" value="9">9</button>
+                <button type="button" value="11">11</button>
+                <button type="button" value="13">13</button>
+                <button type="button" value="15">15</button>
+            </div>
+            <div class="tools">
+                <button class="active" type="button" value="draw">Draw</button>
+                <button type="button" value="move">Move</button>
+                <button type="button" value="text">Text</button>
+                <button type="button" value="erase">Erase</button>
+            </div>
+            <div class="actions">
+                <button id="clear">Clear</button>
+                <button id="save">Save</button>
+                <button id="undo">Undo</button>
+            </div>
+
+        </div>
+        
+        <div class="right-block">
+            <canvas id="paint-canvas" width="800" height="700"></canvas>
+        </div>
+    </div>
+        <div id="svg-frame">
+            <img class="svg-item" src="OaklandsLogicBig/And.png" draggable="true">
+            <img class="svg-item" src="OaklandsLogicBig/Blocker.png" draggable="true">
+            <img class="svg-item" src="OaklandsLogicBig/CalculatorAddition.png" draggable="true">
+            <img class="svg-item" src="OaklandsLogicBig/CalculatorDivide.png" draggable="true">
+            <img class="svg-item" src="OaklandsLogicBig/CalculatorExponential.png" draggable="true">
+            <img class="svg-item" src="OaklandsLogicBig/CalculatorMultiply.png" draggable="true">
+            <img class="svg-item" src="OaklandsLogicBig/CalculatorSubstraction.png" draggable="true">
+            <img class="svg-item" src="OaklandsLogicBig/GreaterThan.png" draggable="true">
+            <img class="svg-item" src="OaklandsLogicBig/Incrementor.png" draggable="true">
+            <img class="svg-item" src="OaklandsLogicBig/MemoryCell.png" draggable="true">
+            <img class="svg-item" src="OaklandsLogicBig/OR.png" draggable="true">
+            <img class="svg-item" src="OaklandsLogicBig/Relay.png" draggable="true">
+            <img class="svg-item" src="OaklandsLogicBig/SignalLock.png" draggable="true">
+            <img class="svg-item" src="OaklandsLogicBig/XAND.png" draggable="true">
+            <img class="svg-item" src="OaklandsLogicBig/XOR.png" draggable="true">
+            <!-- Add more images as needed -->
+
+            <img class="svg-item twice" src="OaklandsLogicBig/BinaryInput.png" draggable="true">
+            <img class="svg-item twice" src="OaklandsLogicBig/BinaryOutput.png" draggable="true">
+            <img class="svg-item twice" src="OaklandsLogicBig/NumberCombiner.png" draggable="true">
+            <img class="svg-item twice" src="OaklandsLogicBig/NumberSplitter.png" draggable="true">
+
+            <img class="svg-item" src="OaklandsLogicBig/LaserReceiver.png" draggable="true">
+            <img class="svg-item" src="OaklandsLogicBig/RedLaser.png" draggable="true">
+            <img class="svg-item" src="OaklandsLogicBig/MaterialLaser.png" draggable="true">
+            <img class="svg-item" src="OaklandsLogicBig/Randomizer.png" draggable="true">
+            <img class="svg-item" src="OaklandsLogicBig/Tether.png" draggable="true">
+            <img class="svg-item" src="OaklandsLogicBig/TFlipFlop.png" draggable="true">
+            <img class="svg-item" src="OaklandsLogicBig/ZeroTick.png" draggable="true">
+
+            <img class="svg-item" src="OaklandsLogicBig/Delay.png" draggable="true">
+            <img class="svg-item" src="OaklandsLogicBig/Frequency.png" draggable="true">
+            <img class="svg-item" src="OaklandsLogicBig/FrequencyClock.png" draggable="true">
+            <img class="svg-item" src="OaklandsLogicBig/NumberInterface.png" draggable="true">
+            <img class="svg-item" src="OaklandsLogicBig/Sustainer.png" draggable="true">
+
+            <img class="svg-item" src="OaklandsLogicBig/Commander.png" draggable="true">
+            <img class="svg-item" src="OaklandsLogicBig/DaylightSensor.png" draggable="true">
+            <img class="svg-item" src="OaklandsLogicBig/Lock.png" draggable="true">
+            <img class="svg-item" src="OaklandsLogicBig/Proximity.png" draggable="true">
+            <img class="svg-item" src="OaklandsLogicBig/Receiver.png" draggable="true">
+            <img class="svg-item" src="OaklandsLogicBig/Transmitter.png" draggable="true">
+            <img class="svg-item" src="OaklandsLogicBig/WeatherSensor.png" draggable="true">
+
+            <img class="svg-item" src="OaklandsLogicBig/Interactor.png" draggable="true">
+            <img class="svg-item" src="OaklandsLogicBig/Collider.png" draggable="true">
+        </div>
+    </main>
+</body>
+</html>
