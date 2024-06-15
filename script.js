@@ -10,9 +10,7 @@ window.onload = function () {
     var mouseY = 0;
     var isDrawing = false;
     var isErasing = false;
-    var drawnLines = [];
-    var drawnImages = [];
-    var drawnTexts = [];
+    var drawnElements = []; // Store all elements in the order they are drawn
     var isImageDragging = false;
     var isMovingImage = false;
     var draggedImage = null;
@@ -24,54 +22,54 @@ window.onload = function () {
 
     var colors = document.getElementsByClassName('colors')[0];
     colors.addEventListener('click', function(event) {
-        currentColor = event.target.getAttribute('value') || 'black';
+        if (event.target.tagName === 'BUTTON') {
+            currentColor = event.target.getAttribute('value') || 'black';
+            clearActive(colors.getElementsByTagName('button'));
+            setActive(event.target);
+        }
     });
 
     var brushes = document.getElementsByClassName('brushes')[0];
     brushes.addEventListener('click', function(event) {
-        currentLineWidth = parseInt(event.target.getAttribute('value'), 10) || 1;
+        if (event.target.tagName === 'BUTTON') {
+            currentLineWidth = parseInt(event.target.getAttribute('value'), 10) || 1;
+            clearActive(brushes.getElementsByTagName('button'));
+            setActive(event.target);
+        }
     });
 
     var tools = document.getElementsByClassName('tools')[0];
     tools.addEventListener('click', function(event) {
-        var toolValue = event.target.getAttribute('value');
-        if (toolValue === 'erase') {
-            isErasing = true;
-            currentTool = toolValue || 'draw';
-        } else {
-            isErasing = false;
-            currentTool = toolValue || 'draw';
+        if (event.target.tagName === 'BUTTON') {
+            currentTool = event.target.getAttribute('value') || 'draw';
+            isErasing = currentTool === 'erase';
+            clearActive(tools.getElementsByTagName('button'));
+            setActive(event.target);
         }
     });
-    
+
     function eraseAt(x, y) {
-        // Erase lines
-        drawnLines = drawnLines.filter(function(line) {
-            return !isPointNearLine(x, y, line.x1, line.y1, line.x2, line.y2, currentLineWidth);
+        drawnElements = drawnElements.filter(function(element) {
+            if (element.type === 'line') {
+                return !isPointNearLine(x, y, element.x1, element.y1, element.x2, element.y2, currentLineWidth);
+            } else if (element.type === 'image') {
+                return !isPointInRect(x, y, element.x, element.y, element.width, element.height);
+            } else if (element.type === 'text') {
+                return !isPointInRect(x, y, element.x, element.y, context.measureText(element.text).width, parseInt(context.font, 10));
+            }
+            return true;
         });
-    
-        // Erase images
-        drawnImages = drawnImages.filter(function(image) {
-            return !isPointInRect(x, y, image.x, image.y, image.width, image.height);
-        });
-    
-        // Erase text (not implemented in original code)
-        // You can choose how to handle erasing text, e.g., by clicking on it or by region
-        drawnTexts = drawnTexts.filter(function(text) {
-            return !isPointInRect(text.text, text.x, text.y);
-        });
-    
+
         redrawCanvas();
     }
-    
-    // Helper functions for collision detection
+
     function isPointNearLine(px, py, x1, y1, x2, y2, tolerance) {
         var dx = x2 - x1;
         var dy = y2 - y1;
         var length = Math.sqrt(dx * dx + dy * dy);
         var u = ((px - x1) * dx + (py - y1) * dy) / (length * length);
         var nearestX, nearestY;
-    
+
         if (u < 0) {
             nearestX = x1;
             nearestY = y1;
@@ -82,15 +80,14 @@ window.onload = function () {
             nearestX = x1 + u * dx;
             nearestY = y1 + u * dy;
         }
-    
+
         var distance = Math.sqrt((px - nearestX) * (px - nearestX) + (py - nearestY) * (py - nearestY));
         return distance <= tolerance;
     }
-    
+
     function isPointInRect(px, py, x, y, width, height) {
         return px >= x && px <= x + width && py >= y && py <= y + height;
     }
-    
 
     function drawGrid() {
         context.strokeStyle = '#ddd';
@@ -128,8 +125,8 @@ window.onload = function () {
             clientX = event.clientX;
             clientY = event.clientY;
         }
-        mouseX = clientX - boundings.left;
-        mouseY = clientY - boundings.top;
+        mouseX = clientX - boundings.left + window.scrollX;
+        mouseY = clientY - boundings.top + window.scrollY;
     }
 
     function startDrawing(event) {
@@ -146,8 +143,8 @@ window.onload = function () {
             var y = mouseY;
 
             // Check if an image is clicked for moving
-            drawnImages.forEach(function(image, index) {
-                if (x >= image.x && x <= image.x + image.width && y >= image.y && y <= image.y + image.height) {
+            drawnElements.forEach(function(element, index) {
+                if (element.type === 'image' && x >= element.x && x <= element.x + element.width && y >= element.y && y <= element.y + element.height) {
                     isMovingImage = true;
                     draggedImage = index;
                     prevX = x;
@@ -161,7 +158,7 @@ window.onload = function () {
                 var x = snapToGrid(mouseX);
                 var y = snapToGrid(mouseY);
                 context.font = "20px Arial";
-                drawnTexts.push({ x: x, y: y, text: text, color: currentColor });
+                drawnElements.push({ type: 'text', x: x, y: y, text: text, color: currentColor });
                 redrawCanvas();
             }
         }
@@ -185,14 +182,8 @@ window.onload = function () {
             prevX = x;
             prevY = y;
 
-            drawnImages[draggedImage].x += dx;
-            drawnImages[draggedImage].y += dy;
-
-            // Snap the image to the grid
-            drawnImages[draggedImage].x = snapToGrid(drawnImages[draggedImage].x);
-            drawnImages[draggedImage].y = snapToGrid(drawnImages[draggedImage].y);
-
-            redrawCanvas();
+            drawnElements[draggedImage].x += dx;
+            drawnElements[draggedImage].y += dy;
         }
     }
 
@@ -202,12 +193,13 @@ window.onload = function () {
             const endX = snapToGrid(mouseX);
             const endY = snapToGrid(mouseY);
             drawLine(startX, startY, endX, endY, currentColor, currentLineWidth, true);
-            drawnLines.push({ x1: startX, y1: startY, x2: endX, y2: endY, color: currentColor, width: currentLineWidth });
+            drawnElements.push({ type: 'line', x1: startX, y1: startY, x2: endX, y2: endY, color: currentColor, width: currentLineWidth });
             isDrawing = false;
             redrawCanvas();
         } else if (isMovingImage) {
             isMovingImage = false;
             draggedImage = null;
+            redrawCanvas();
         }
     }
 
@@ -227,19 +219,18 @@ window.onload = function () {
         context.fillRect(0, 0, canvas.width, canvas.height);
 
         drawGrid();
-        drawnLines.forEach(line => {
-            drawLine(line.x1, line.y1, line.x2, line.y2, line.color, line.width, true);
-        });
-        drawnImages.forEach(image => {
-            drawImageOnCanvas(image);
-        });
-        drawnTexts.forEach(text => {
-            context.fillStyle = text.color;
-            context.fillText(text.text, text.x, text.y);
+        drawnElements.forEach(element => {
+            if (element.type === 'line') {
+                drawLine(element.x1, element.y1, element.x2, element.y2, element.color, element.width, true);
+            } else if (element.type === 'image') {
+                drawImageOnCanvas(element);
+            } else if (element.type === 'text') {
+                context.fillStyle = element.color;
+                context.fillText(element.text, element.x, element.y);
+            }
         });
     }
 
-    // Move the image drawing to a separate function
     function drawImageOnCanvas(image) {
         var img = new Image();
         img.onload = function() {
@@ -248,7 +239,6 @@ window.onload = function () {
         img.src = image.src;
     }
 
-    // Modify the saveButton event listener to include drawing images before exporting
     var saveButton = document.getElementById('save');
     saveButton.addEventListener('click', function() {
         var imageName = prompt('Please enter image name');
@@ -257,14 +247,11 @@ window.onload = function () {
             return;
         }
 
-        // Count the number of images that need to be loaded
-        var imagesToLoad = drawnImages.length;
+        var imagesToLoad = drawnElements.filter(el => el.type === 'image').length;
         var imagesLoaded = 0;
 
-        // Function to check if all images have loaded
         function checkAllImagesLoaded() {
             if (imagesLoaded === imagesToLoad) {
-                // Once all images are loaded, export the canvas
                 var canvasDataURL = canvas.toDataURL();
                 var a = document.createElement('a');
                 a.href = canvasDataURL;
@@ -275,53 +262,49 @@ window.onload = function () {
 
         redrawCanvas(); // Include drawing images
 
-        // Check if there are no images to load
         if (imagesToLoad === 0) {
             checkAllImagesLoaded();
         } else {
-            // Loop through each image and attach onload event listener
-            drawnImages.forEach(function(image) {
-                var img = new Image();
-                img.onload = function() {
-                    imagesLoaded++;
-                    // Check if all images have loaded
-                    checkAllImagesLoaded();
+            drawnElements.forEach(function(element) {
+                if (element.type === 'image') {
+                    var img = new Image();
+                    img.onload = function() {
+                        imagesLoaded++;
+                        checkAllImagesLoaded();
+                    }
+                    img.src = element.src;
                 }
-                img.src = image.src;
             });
         }
     });
 
     var clearButton = document.getElementById('clear');
     clearButton.addEventListener('click', function() {
-        drawnLines = [];
-        drawnImages = [];
-        drawnTexts = [];
+        drawnElements = [];
         redrawCanvas();
     });
 
     var undoButton = document.getElementById('undo');
     undoButton.addEventListener('click', function() {
-        if (drawnLines.length > 0) {
-            drawnLines.pop();
-        } else if (drawnImages.length > 0) {
-            drawnImages.pop();
-        } else if (drawnTexts.length > 0) {
-            drawnTexts.pop();
+        if (drawnElements.length > 0) {
+            drawnElements.pop();
+            redrawCanvas();
         }
-        redrawCanvas();
     });
 
     Array.from(svgItems).forEach(function(svgItem) {
         svgItem.addEventListener('dragstart', function(event) {
             isImageDragging = true;
             var imageUrl = event.target.getAttribute('src');
+            var isTwice = event.target.classList.contains('twice');
             event.dataTransfer.setData('image/png', imageUrl);
+            event.dataTransfer.setData('isTwice', isTwice);
         });
 
         svgItem.addEventListener('touchstart', function(event) {
             isImageDragging = true;
             var imageUrl = event.target.getAttribute('src');
+            var isTwice = event.target.classList.contains('twice');
             var touch = event.touches[0];
             event.dataTransfer = {
                 setData: function(format, data) {
@@ -334,69 +317,40 @@ window.onload = function () {
                 clientY: touch.clientY
             };
             event.dataTransfer.setData('image/png', imageUrl);
+            event.dataTransfer.setData('isTwice', isTwice);
         });
     });
 
-    // Function to remove 'active' class from all elements in a NodeList
-function clearActive(elements) {
-    Array.from(elements).forEach(function(element) {
-        element.classList.remove('active');
-    });
-}
-
-// Function to set 'active' class to the selected element
-function setActive(element) {
-    element.classList.add('active');
-}
-
-// Update event listeners to set and clear active states for buttons only
-colors.addEventListener('click', function(event) {
-    if (event.target.tagName === 'BUTTON') {
-        currentColor = event.target.getAttribute('value') || 'black';
-        clearActive(colors.getElementsByTagName('button'));
-        setActive(event.target);
+    function clearActive(elements) {
+        Array.from(elements).forEach(function(element) {
+            element.classList.remove('active');
+        });
     }
-});
 
-brushes.addEventListener('click', function(event) {
-    if (event.target.tagName === 'BUTTON') {
-        currentLineWidth = parseInt(event.target.getAttribute('value'), 10) || 1;
-        clearActive(brushes.getElementsByTagName('button'));
-        setActive(event.target);
+    function setActive(element) {
+        element.classList.add('active');
     }
-});
-
-tools.addEventListener('click', function(event) {
-    if (event.target.tagName === 'BUTTON') {
-        currentTool = event.target.getAttribute('value') || 'draw';
-        clearActive(tools.getElementsByTagName('button'));
-        setActive(event.target);
-    }
-});
-
-
 
     canvas.addEventListener('drop', function(event) {
         event.preventDefault();
         setMouseCoordinates(event);
         isImageDragging = false;
         var imageUrl = event.dataTransfer.getData('image/png');
+        var isTwice = event.dataTransfer.getData('isTwice') === 'true';
 
         if (imageUrl) {
             var image = new Image();
             image.src = imageUrl;
             image.onload = function() {
                 var aspectRatio = image.height / image.width;
-                var newWidth = 80; 
-                console.log("Test");
+                var newWidth = isTwice ? 160 : 80;
                 var newHeight = newWidth * aspectRatio;
 
-                // Position the image where it was dropped
                 var dropX = snapToGrid(mouseX);
                 var dropY = snapToGrid(mouseY);
 
                 context.drawImage(image, dropX, dropY, newWidth, newHeight);
-                drawnImages.push({ x: dropX, y: dropY, width: newWidth, height: newHeight, src: imageUrl });
+                drawnElements.push({ type: 'image', x: dropX, y: dropY, width: newWidth, height: newHeight, src: imageUrl });
                 redrawCanvas();
             };
         }
