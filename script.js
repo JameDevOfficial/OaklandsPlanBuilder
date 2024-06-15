@@ -184,8 +184,8 @@ window.onload = function () {
             redrawCanvas();
             drawLine(startX, startY, snapToGrid(mouseX), snapToGrid(mouseY), currentColor, currentLineWidth, false);
         } else if (isMovingElement && draggedElementIndex !== null) {
-            var x = mouseX;
-            var y = mouseY;
+            var x = snapToGrid(mouseX);
+            var y = snapToGrid(mouseY);
 
             var dx = x - prevX;
             var dy = y - prevY;
