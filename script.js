@@ -12,8 +12,8 @@ window.onload = function () {
     var isErasing = false;
     var drawnElements = []; // Store all elements in the order they are drawn
     var isImageDragging = false;
-    var isMovingImage = false;
-    var draggedImage = null;
+    var isMovingElement = false;
+    var draggedElementIndex = null;
     var prevX, prevY;
 
     var currentColor = '#ea3030';
@@ -142,11 +142,22 @@ window.onload = function () {
             var x = mouseX;
             var y = mouseY;
 
-            // Check if an image is clicked for moving
             drawnElements.forEach(function(element, index) {
                 if (element.type === 'image' && x >= element.x && x <= element.x + element.width && y >= element.y && y <= element.y + element.height) {
-                    isMovingImage = true;
-                    draggedImage = index;
+                    isMovingElement = true;
+                    draggedElementIndex = index;
+                    prevX = x;
+                    prevY = y;
+                    return;
+                } else if (element.type === 'line' && isPointNearLine(x, y, element.x1, element.y1, element.x2, element.y2, currentLineWidth)) {
+                    isMovingElement = true;
+                    draggedElementIndex = index;
+                    prevX = x;
+                    prevY = y;
+                    return;
+                } else if (element.type === 'text' && isPointInRect(x, y, element.x, element.y, context.measureText(element.text).width, parseInt(context.font, 10))) {
+                    isMovingElement = true;
+                    draggedElementIndex = index;
                     prevX = x;
                     prevY = y;
                     return;
@@ -172,7 +183,7 @@ window.onload = function () {
         } else if (isDrawing) {
             redrawCanvas();
             drawLine(startX, startY, snapToGrid(mouseX), snapToGrid(mouseY), currentColor, currentLineWidth, false);
-        } else if (isMovingImage && draggedImage !== null) {
+        } else if (isMovingElement && draggedElementIndex !== null) {
             var x = mouseX;
             var y = mouseY;
 
@@ -182,8 +193,16 @@ window.onload = function () {
             prevX = x;
             prevY = y;
 
-            drawnElements[draggedImage].x += dx;
-            drawnElements[draggedImage].y += dy;
+            if (drawnElements[draggedElementIndex].type === 'line') {
+                drawnElements[draggedElementIndex].x1 += dx;
+                drawnElements[draggedElementIndex].y1 += dy;
+                drawnElements[draggedElementIndex].x2 += dx;
+                drawnElements[draggedElementIndex].y2 += dy;
+            } else {
+                drawnElements[draggedElementIndex].x += dx;
+                drawnElements[draggedElementIndex].y += dy;
+            }
+            redrawCanvas();
         }
     }
 
@@ -196,9 +215,9 @@ window.onload = function () {
             drawnElements.push({ type: 'line', x1: startX, y1: startY, x2: endX, y2: endY, color: currentColor, width: currentLineWidth });
             isDrawing = false;
             redrawCanvas();
-        } else if (isMovingImage) {
-            isMovingImage = false;
-            draggedImage = null;
+        } else if (isMovingElement) {
+            isMovingElement = false;
+            draggedElementIndex = null;
             redrawCanvas();
         }
     }
@@ -211,32 +230,30 @@ window.onload = function () {
         context.lineTo(x2, y2);
         context.stroke();
         context.closePath();
+        if (permanent) {
+            drawnElements.push({ type: 'line', x1: x1, y1: y1, x2: x2, y2: y2, color: color, width: width });
+        }
     }
 
     function redrawCanvas() {
         context.clearRect(0, 0, canvas.width, canvas.height);
         context.fillStyle = "#ffffff"
         context.fillRect(0, 0, canvas.width, canvas.height);
-
         drawGrid();
-        drawnElements.forEach(element => {
+
+        drawnElements.forEach(function (element) {
             if (element.type === 'line') {
-                drawLine(element.x1, element.y1, element.x2, element.y2, element.color, element.width, true);
+                drawLine(element.x1, element.y1, element.x2, element.y2, element.color, element.width, false);
             } else if (element.type === 'image') {
-                drawImageOnCanvas(element);
+                var img = new Image();
+                img.src = element.src;
+                context.drawImage(img, element.x, element.y, element.width, element.height);
             } else if (element.type === 'text') {
+                context.font = "20px Arial";
                 context.fillStyle = element.color;
                 context.fillText(element.text, element.x, element.y);
             }
         });
-    }
-
-    function drawImageOnCanvas(image) {
-        var img = new Image();
-        img.onload = function() {
-            context.drawImage(img, image.x, image.y, image.width, image.height);
-        }
-        img.src = image.src;
     }
 
     var saveButton = document.getElementById('save');
