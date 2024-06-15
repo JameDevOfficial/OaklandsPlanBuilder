@@ -245,6 +245,7 @@ main{
 
 .tools button, .actions button {
   display: block;
+  max-width: 51px;
   width: 100%;
   border: 0;
   border-radius: 0;
